@@ -29,33 +29,30 @@
     }
 
     body {
-      background: radial-gradient(circle at top, #222849 0, #060714 55%);
+      background: #0b1020;
       color: var(--text);
       height: 100vh;
       width: 100vw;
       overflow: hidden;
-      /* No body scroll */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
+      margin: 0;
+      padding: 0;
+      /* REMOVED PADDING */
     }
 
     .app {
       width: 100%;
-      max-width: 1200px;
       height: 100%;
+      max-width: none;
+      /* REMOVED MAX-WIDTH */
       background: linear-gradient(135deg, #141728, #050612);
-      border-radius: 24px;
+      border-radius: 0;
+      /* REMOVED BORDER RADIUS */
       padding: 90px 20px 32px;
-      /* extra top padding for big eyes */
-      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+      box-shadow: none;
+      /* REMOVED SHADOW */
       position: relative;
       overflow-y: auto;
-      /* Internal scroll */
       overflow-x: hidden;
-
-      /* Hide scrollbar completely */
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
@@ -67,7 +64,8 @@
     .app::before {
       content: "";
       position: absolute;
-      inset: -120px;
+      inset: 0;
+      /* Cover entire screen properly */
       background: radial-gradient(circle at 10% 0, #ff7a8c55 0, transparent 50%),
         radial-gradient(circle at 90% 10%, #33b5ff44 0, transparent 55%);
       opacity: 0.8;
