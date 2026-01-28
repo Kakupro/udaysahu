@@ -955,425 +955,415 @@
         </section>
       </div>
 
-      <!-- CREDITS FOOTER -->
-      <div class="credits">
-        <div class="credits-text">
-          Created by
-          <span class="credits-name">Uday Sahu</span>
-          <div class="credits-number">91+ 8882413926</div>
-        </div>
-      </div>
 
-    </div>
-  </div>
 
-  <script>
-    const STORAGE_KEY = "padhne_bath_ja_progress";
-    const TASKS_KEY = "padhne_bath_ja_tasks";
-    const JOURNAL_KEY = "padhne_bath_ja_journal";
+      <script>
+        const STORAGE_KEY = "padhne_bath_ja_progress";
+        const TASKS_KEY = "padhne_bath_ja_tasks";
+        const JOURNAL_KEY = "padhne_bath_ja_journal";
 
-    function getTodayKey(dateObj = new Date()) {
-      const y = dateObj.getFullYear();
-      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
-      const d = String(dateObj.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
-
-    // ---- TIMELINE ----
-    const rowAm = document.getElementById("timelineRowAm");
-    const rowPm = document.getElementById("timelineRowPm");
-
-    function formatHourLabel(h) {
-      const suffix = h >= 12 ? "PM" : "AM";
-      let hour = h % 12;
-      if (hour === 0) hour = 12;
-      return hour + " " + suffix;
-    }
-
-    function buildRow(start, endInclusive, container) {
-      for (let h = start; h <= endInclusive; h++) {
-        const col = document.createElement("div");
-        col.className = "hour-column";
-        col.dataset.hour = h;
-
-        const task = document.createElement("div");
-        task.className = "task-box";
-        task.contentEditable = "true";
-        task.setAttribute("spellcheck", "false");
-
-        const timeBox = document.createElement("div");
-        timeBox.className = "time-box";
-        timeBox.textContent = formatHourLabel(h);
-
-        col.appendChild(task);
-        col.appendChild(timeBox);
-        container.appendChild(col);
-      }
-    }
-
-    buildRow(0, 11, rowAm);
-    buildRow(12, 23, rowPm);
-
-    function loadTasks() {
-      try {
-        const raw = localStorage.getItem(TASKS_KEY);
-        if (!raw) return {};
-        return JSON.parse(raw);
-      } catch {
-        return {};
-      }
-    }
-
-    function saveTasks() {
-      localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
-    }
-
-    let tasksData = loadTasks();
-
-    function attachTaskBoxHandlers() {
-      const today = getTodayKey();
-      if (!tasksData[today]) tasksData[today] = {};
-      const todaysTasks = tasksData[today];
-
-      document.querySelectorAll(".task-box").forEach(box => {
-        const hour = box.parentElement.dataset.hour;
-        if (todaysTasks[hour]) {
-          box.innerText = todaysTasks[hour];
+        function getTodayKey(dateObj = new Date()) {
+          const y = dateObj.getFullYear();
+          const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+          const d = String(dateObj.getDate()).padStart(2, "0");
+          return `${y}-${m}-${d}`;
         }
 
-        box.addEventListener("input", () => {
-          const dateKey = getTodayKey();
-          if (!tasksData[dateKey]) tasksData[dateKey] = {};
-          tasksData[dateKey][hour] = box.innerText;
-          saveTasks();
-        });
-      });
-    }
+        // ---- TIMELINE ----
+        const rowAm = document.getElementById("timelineRowAm");
+        const rowPm = document.getElementById("timelineRowPm");
 
-    attachTaskBoxHandlers();
-
-    // ---- CLOCK ----
-    const clockTime = document.getElementById("clockTime");
-    const clockDate = document.getElementById("clockDate");
-
-    function updateClock() {
-      const now = new Date();
-
-      let hours = now.getHours();
-      const minutes = now.getMinutes().toString().padStart(2, "0");
-      const suffix = hours >= 12 ? "PM" : "AM";
-      let displayHour = hours % 12;
-      if (displayHour === 0) displayHour = 12;
-      clockTime.textContent = `${displayHour}:${minutes} ${suffix}`;
-
-      const options = {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric"
-      };
-      clockDate.textContent = now.toLocaleDateString(undefined, options);
-
-      const currentHour = hours;
-      document.querySelectorAll(".hour-column").forEach(col => {
-        const h = parseInt(col.dataset.hour, 10);
-        col.classList.remove("past", "current");
-        if (h < currentHour) {
-          col.classList.add("past");
-        } else if (h === currentHour) {
-          col.classList.add("current");
-        }
-      });
-    }
-
-    updateClock();
-    setInterval(updateClock, 60000);
-
-    // ---- STOPWATCH / PROGRESS ----
-    const stopwatchDisplay = document.getElementById("stopwatchDisplay");
-    const todayLabel = document.getElementById("todayLabel");
-    const btnStartPause = document.getElementById("btnStartPause");
-    const btnReset = document.getElementById("btnReset");
-    const progressTableBody = document.getElementById("progressTableBody");
-
-    todayLabel.textContent = getTodayKey();
-
-    function loadProgress() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return {};
-        return JSON.parse(raw);
-      } catch {
-        return {};
-      }
-    }
-
-    function saveProgress() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
-    }
-
-    let progressData = loadProgress();
-
-    function formatDuration(seconds) {
-      seconds = Math.max(0, Math.floor(seconds));
-      const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-      const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-      const s = String(seconds % 60).padStart(2, "0");
-      return `${h}:${m}:${s}`;
-    }
-
-    function updateProgressTable() {
-      progressTableBody.innerHTML = "";
-      const entries = Object.entries(progressData);
-      entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
-      if (entries.length === 0) {
-        const row = document.createElement("tr");
-        const cell = document.createElement("td");
-        cell.colSpan = 2;
-        cell.textContent = "No study time recorded yet. Go back and start the stopwatch!";
-        row.appendChild(cell);
-        progressTableBody.appendChild(row);
-        return;
-      }
-      for (const [date, seconds] of entries) {
-        const tr = document.createElement("tr");
-        const tdDate = document.createElement("td");
-        const tdTime = document.createElement("td");
-        tdDate.textContent = date;
-        tdTime.textContent = formatDuration(seconds);
-        tr.appendChild(tdDate);
-        tr.appendChild(tdTime);
-        progressTableBody.appendChild(tr);
-      }
-    }
-
-    let elapsedToday = progressData[getTodayKey()] || 0;
-    let stopwatchInterval = null;
-    let startedAtMs = null;
-    let baseAtStart = elapsedToday;
-
-    function renderStopwatch() {
-      stopwatchDisplay.textContent = formatDuration(elapsedToday);
-    }
-
-    renderStopwatch();
-    updateProgressTable();
-
-    function startStopwatch() {
-      if (stopwatchInterval) return;
-      baseAtStart = elapsedToday;
-      startedAtMs = Date.now();
-      stopwatchInterval = setInterval(() => {
-        const now = Date.now();
-        const deltaSeconds = Math.floor((now - startedAtMs) / 1000);
-        elapsedToday = baseAtStart + deltaSeconds;
-        stopwatchDisplay.textContent = formatDuration(elapsedToday);
-      }, 1000);
-      btnStartPause.textContent = "Pause";
-    }
-
-    function pauseStopwatch() {
-      if (!stopwatchInterval) return;
-      clearInterval(stopwatchInterval);
-      stopwatchInterval = null;
-      progressData[getTodayKey()] = elapsedToday;
-      saveProgress();
-      updateProgressTable();
-      btnStartPause.textContent = "Start";
-    }
-
-    function resetStopwatch() {
-      elapsedToday = 0;
-      renderStopwatch();
-      if (stopwatchInterval) {
-        baseAtStart = 0;
-        startedAtMs = Date.now();
-      }
-      progressData[getTodayKey()] = 0;
-      saveProgress();
-      updateProgressTable();
-    }
-
-    btnStartPause.addEventListener("click", () => {
-      if (stopwatchInterval) {
-        pauseStopwatch();
-      } else {
-        startStopwatch();
-      }
-    });
-
-    btnReset.addEventListener("click", () => {
-      resetStopwatch();
-    });
-
-    // ---- JOURNAL ----
-    const journalEntriesContainer = document.getElementById("journalEntries");
-
-    function loadJournal() {
-      try {
-        const raw = localStorage.getItem(JOURNAL_KEY);
-        if (!raw) return {};
-        return JSON.parse(raw);
-      } catch {
-        return {};
-      }
-    }
-
-    function saveJournal() {
-      localStorage.setItem(JOURNAL_KEY, JSON.stringify(journalData));
-    }
-
-    let journalData = loadJournal();
-
-    function ensureTodayJournal() {
-      const today = getTodayKey();
-      if (!journalData[today]) journalData[today] = "";
-    }
-
-    function highlightSelectionWithin(container) {
-      const sel = window.getSelection();
-      if (!sel.rangeCount) return;
-      const range = sel.getRangeAt(0);
-      if (!container.contains(range.commonAncestorContainer)) return;
-      if (sel.isCollapsed) return;
-      const mark = document.createElement("mark");
-      try {
-        range.surroundContents(mark);
-      } catch {
-        const text = range.toString();
-        if (!text) return;
-        range.deleteContents();
-        mark.textContent = text;
-        range.insertNode(mark);
-      }
-      sel.removeAllRanges();
-    }
-
-    function buildJournalUI() {
-      journalEntriesContainer.innerHTML = "";
-      const todayKey = getTodayKey();
-      const entries = Object.entries(journalData);
-      entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
-
-      for (const [date, html] of entries) {
-        const entry = document.createElement("div");
-        entry.className = "journal-entry";
-        if (date === todayKey) entry.classList.add("today");
-
-        const header = document.createElement("div");
-        header.className = "journal-entry-header";
-
-        const dateSpan = document.createElement("div");
-        dateSpan.className = "journal-entry-date";
-        dateSpan.textContent = date;
-
-        const arrow = document.createElement("div");
-        arrow.className = "journal-entry-arrow";
-        arrow.textContent = "▼";
-
-        header.appendChild(dateSpan);
-        header.appendChild(arrow);
-        entry.appendChild(header);
-
-        const body = document.createElement("div");
-        body.className = "journal-entry-body";
-
-        const toolbar = document.createElement("div");
-        toolbar.className = "journal-toolbar";
-
-        const highlightBtn = document.createElement("button");
-        highlightBtn.className = "btn";
-        highlightBtn.textContent = "Highlight selection";
-
-        toolbar.appendChild(highlightBtn);
-
-        const content = document.createElement("div");
-        content.className = "journal-content";
-        content.contentEditable = "true";
-        content.innerHTML = html || "";
-
-        body.appendChild(toolbar);
-        body.appendChild(content);
-        entry.appendChild(body);
-
-        journalEntriesContainer.appendChild(entry);
-
-        if (date !== todayKey) {
-          entry.classList.add("collapsed");
-          body.style.display = "none";
+        function formatHourLabel(h) {
+          const suffix = h >= 12 ? "PM" : "AM";
+          let hour = h % 12;
+          if (hour === 0) hour = 12;
+          return hour + " " + suffix;
         }
 
-        header.addEventListener("click", () => {
-          const collapsed = entry.classList.toggle("collapsed");
-          body.style.display = collapsed ? "none" : "block";
+        function buildRow(start, endInclusive, container) {
+          for (let h = start; h <= endInclusive; h++) {
+            const col = document.createElement("div");
+            col.className = "hour-column";
+            col.dataset.hour = h;
+
+            const task = document.createElement("div");
+            task.className = "task-box";
+            task.contentEditable = "true";
+            task.setAttribute("spellcheck", "false");
+
+            const timeBox = document.createElement("div");
+            timeBox.className = "time-box";
+            timeBox.textContent = formatHourLabel(h);
+
+            col.appendChild(task);
+            col.appendChild(timeBox);
+            container.appendChild(col);
+          }
+        }
+
+        buildRow(0, 11, rowAm);
+        buildRow(12, 23, rowPm);
+
+        function loadTasks() {
+          try {
+            const raw = localStorage.getItem(TASKS_KEY);
+            if (!raw) return {};
+            return JSON.parse(raw);
+          } catch {
+            return {};
+          }
+        }
+
+        function saveTasks() {
+          localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
+        }
+
+        let tasksData = loadTasks();
+
+        function attachTaskBoxHandlers() {
+          const today = getTodayKey();
+          if (!tasksData[today]) tasksData[today] = {};
+          const todaysTasks = tasksData[today];
+
+          document.querySelectorAll(".task-box").forEach(box => {
+            const hour = box.parentElement.dataset.hour;
+            if (todaysTasks[hour]) {
+              box.innerText = todaysTasks[hour];
+            }
+
+            box.addEventListener("input", () => {
+              const dateKey = getTodayKey();
+              if (!tasksData[dateKey]) tasksData[dateKey] = {};
+              tasksData[dateKey][hour] = box.innerText;
+              saveTasks();
+            });
+          });
+        }
+
+        attachTaskBoxHandlers();
+
+        // ---- CLOCK ----
+        const clockTime = document.getElementById("clockTime");
+        const clockDate = document.getElementById("clockDate");
+
+        function updateClock() {
+          const now = new Date();
+
+          let hours = now.getHours();
+          const minutes = now.getMinutes().toString().padStart(2, "0");
+          const suffix = hours >= 12 ? "PM" : "AM";
+          let displayHour = hours % 12;
+          if (displayHour === 0) displayHour = 12;
+          clockTime.textContent = `${displayHour}:${minutes} ${suffix}`;
+
+          const options = {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+          };
+          clockDate.textContent = now.toLocaleDateString(undefined, options);
+
+          const currentHour = hours;
+          document.querySelectorAll(".hour-column").forEach(col => {
+            const h = parseInt(col.dataset.hour, 10);
+            col.classList.remove("past", "current");
+            if (h < currentHour) {
+              col.classList.add("past");
+            } else if (h === currentHour) {
+              col.classList.add("current");
+            }
+          });
+        }
+
+        updateClock();
+        setInterval(updateClock, 60000);
+
+        // ---- STOPWATCH / PROGRESS ----
+        const stopwatchDisplay = document.getElementById("stopwatchDisplay");
+        const todayLabel = document.getElementById("todayLabel");
+        const btnStartPause = document.getElementById("btnStartPause");
+        const btnReset = document.getElementById("btnReset");
+        const progressTableBody = document.getElementById("progressTableBody");
+
+        todayLabel.textContent = getTodayKey();
+
+        function loadProgress() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return {};
+            return JSON.parse(raw);
+          } catch {
+            return {};
+          }
+        }
+
+        function saveProgress() {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
+        }
+
+        let progressData = loadProgress();
+
+        function formatDuration(seconds) {
+          seconds = Math.max(0, Math.floor(seconds));
+          const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+          const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+          const s = String(seconds % 60).padStart(2, "0");
+          return `${h}:${m}:${s}`;
+        }
+
+        function updateProgressTable() {
+          progressTableBody.innerHTML = "";
+          const entries = Object.entries(progressData);
+          entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
+          if (entries.length === 0) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 2;
+            cell.textContent = "No study time recorded yet. Go back and start the stopwatch!";
+            row.appendChild(cell);
+            progressTableBody.appendChild(row);
+            return;
+          }
+          for (const [date, seconds] of entries) {
+            const tr = document.createElement("tr");
+            const tdDate = document.createElement("td");
+            const tdTime = document.createElement("td");
+            tdDate.textContent = date;
+            tdTime.textContent = formatDuration(seconds);
+            tr.appendChild(tdDate);
+            tr.appendChild(tdTime);
+            progressTableBody.appendChild(tr);
+          }
+        }
+
+        let elapsedToday = progressData[getTodayKey()] || 0;
+        let stopwatchInterval = null;
+        let startedAtMs = null;
+        let baseAtStart = elapsedToday;
+
+        function renderStopwatch() {
+          stopwatchDisplay.textContent = formatDuration(elapsedToday);
+        }
+
+        renderStopwatch();
+        updateProgressTable();
+
+        function startStopwatch() {
+          if (stopwatchInterval) return;
+          baseAtStart = elapsedToday;
+          startedAtMs = Date.now();
+          stopwatchInterval = setInterval(() => {
+            const now = Date.now();
+            const deltaSeconds = Math.floor((now - startedAtMs) / 1000);
+            elapsedToday = baseAtStart + deltaSeconds;
+            stopwatchDisplay.textContent = formatDuration(elapsedToday);
+          }, 1000);
+          btnStartPause.textContent = "Pause";
+        }
+
+        function pauseStopwatch() {
+          if (!stopwatchInterval) return;
+          clearInterval(stopwatchInterval);
+          stopwatchInterval = null;
+          progressData[getTodayKey()] = elapsedToday;
+          saveProgress();
+          updateProgressTable();
+          btnStartPause.textContent = "Start";
+        }
+
+        function resetStopwatch() {
+          elapsedToday = 0;
+          renderStopwatch();
+          if (stopwatchInterval) {
+            baseAtStart = 0;
+            startedAtMs = Date.now();
+          }
+          progressData[getTodayKey()] = 0;
+          saveProgress();
+          updateProgressTable();
+        }
+
+        btnStartPause.addEventListener("click", () => {
+          if (stopwatchInterval) {
+            pauseStopwatch();
+          } else {
+            startStopwatch();
+          }
         });
 
-        content.addEventListener("input", () => {
-          journalData[date] = content.innerHTML;
-          saveJournal();
+        btnReset.addEventListener("click", () => {
+          resetStopwatch();
         });
 
-        highlightBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          highlightSelectionWithin(content);
-          journalData[date] = content.innerHTML;
-          saveJournal();
+        // ---- JOURNAL ----
+        const journalEntriesContainer = document.getElementById("journalEntries");
+
+        function loadJournal() {
+          try {
+            const raw = localStorage.getItem(JOURNAL_KEY);
+            if (!raw) return {};
+            return JSON.parse(raw);
+          } catch {
+            return {};
+          }
+        }
+
+        function saveJournal() {
+          localStorage.setItem(JOURNAL_KEY, JSON.stringify(journalData));
+        }
+
+        let journalData = loadJournal();
+
+        function ensureTodayJournal() {
+          const today = getTodayKey();
+          if (!journalData[today]) journalData[today] = "";
+        }
+
+        function highlightSelectionWithin(container) {
+          const sel = window.getSelection();
+          if (!sel.rangeCount) return;
+          const range = sel.getRangeAt(0);
+          if (!container.contains(range.commonAncestorContainer)) return;
+          if (sel.isCollapsed) return;
+          const mark = document.createElement("mark");
+          try {
+            range.surroundContents(mark);
+          } catch {
+            const text = range.toString();
+            if (!text) return;
+            range.deleteContents();
+            mark.textContent = text;
+            range.insertNode(mark);
+          }
+          sel.removeAllRanges();
+        }
+
+        function buildJournalUI() {
+          journalEntriesContainer.innerHTML = "";
+          const todayKey = getTodayKey();
+          const entries = Object.entries(journalData);
+          entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
+
+          for (const [date, html] of entries) {
+            const entry = document.createElement("div");
+            entry.className = "journal-entry";
+            if (date === todayKey) entry.classList.add("today");
+
+            const header = document.createElement("div");
+            header.className = "journal-entry-header";
+
+            const dateSpan = document.createElement("div");
+            dateSpan.className = "journal-entry-date";
+            dateSpan.textContent = date;
+
+            const arrow = document.createElement("div");
+            arrow.className = "journal-entry-arrow";
+            arrow.textContent = "▼";
+
+            header.appendChild(dateSpan);
+            header.appendChild(arrow);
+            entry.appendChild(header);
+
+            const body = document.createElement("div");
+            body.className = "journal-entry-body";
+
+            const toolbar = document.createElement("div");
+            toolbar.className = "journal-toolbar";
+
+            const highlightBtn = document.createElement("button");
+            highlightBtn.className = "btn";
+            highlightBtn.textContent = "Highlight selection";
+
+            toolbar.appendChild(highlightBtn);
+
+            const content = document.createElement("div");
+            content.className = "journal-content";
+            content.contentEditable = "true";
+            content.innerHTML = html || "";
+
+            body.appendChild(toolbar);
+            body.appendChild(content);
+            entry.appendChild(body);
+
+            journalEntriesContainer.appendChild(entry);
+
+            if (date !== todayKey) {
+              entry.classList.add("collapsed");
+              body.style.display = "none";
+            }
+
+            header.addEventListener("click", () => {
+              const collapsed = entry.classList.toggle("collapsed");
+              body.style.display = collapsed ? "none" : "block";
+            });
+
+            content.addEventListener("input", () => {
+              journalData[date] = content.innerHTML;
+              saveJournal();
+            });
+
+            highlightBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              highlightSelectionWithin(content);
+              journalData[date] = content.innerHTML;
+              saveJournal();
+            });
+          }
+        }
+
+        ensureTodayJournal();
+        buildJournalUI();
+
+        // ---- PAGE SWITCH ----
+        const mainPage = document.getElementById("mainPage");
+        const progressPage = document.getElementById("progressPage");
+        const btnProgress = document.getElementById("btnProgress");
+        const btnBack = document.getElementById("btnBack");
+
+        btnProgress.addEventListener("click", () => {
+          pauseStopwatch();
+          mainPage.classList.add("hidden");
+          progressPage.classList.remove("hidden");
+          updateProgressTable();
         });
-      }
-    }
 
-    ensureTodayJournal();
-    buildJournalUI();
+        btnBack.addEventListener("click", () => {
+          mainPage.classList.remove("hidden");
+          progressPage.classList.add("hidden");
+        });
 
-    // ---- PAGE SWITCH ----
-    const mainPage = document.getElementById("mainPage");
-    const progressPage = document.getElementById("progressPage");
-    const btnProgress = document.getElementById("btnProgress");
-    const btnBack = document.getElementById("btnBack");
+        // ---- EYES FOLLOW CURSOR ----
+        document.addEventListener("mousemove", (e) => {
+          const irises = document.querySelectorAll(".eye-iris");
 
-    btnProgress.addEventListener("click", () => {
-      pauseStopwatch();
-      mainPage.classList.add("hidden");
-      progressPage.classList.remove("hidden");
-      updateProgressTable();
-    });
+          irises.forEach((iris) => {
+            // Get the center of the eye relative to the viewport
+            const rect = iris.parentElement.getBoundingClientRect();
+            // iris.parentElement is .eye-sclera, so let's use the .eye wrapper for better center calculation or just the sclera
+            // Actually, let's use the iris's initial position reference which is centered in .eye-sclera
 
-    btnBack.addEventListener("click", () => {
-      mainPage.classList.remove("hidden");
-      progressPage.classList.add("hidden");
-    });
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
 
-    // ---- EYES FOLLOW CURSOR ----
-    document.addEventListener("mousemove", (e) => {
-      const irises = document.querySelectorAll(".eye-iris");
+            // Calculate angle and distance
+            const dx = e.clientX - centerX;
+            const dy = e.clientY - centerY;
+            const angle = Math.atan2(dy, dx);
 
-      irises.forEach((iris) => {
-        // Get the center of the eye relative to the viewport
-        const rect = iris.parentElement.getBoundingClientRect();
-        // iris.parentElement is .eye-sclera, so let's use the .eye wrapper for better center calculation or just the sclera
-        // Actually, let's use the iris's initial position reference which is centered in .eye-sclera
+            // Limit the movement radius
+            const maxRadius = 15;
+            const distance = Math.min(maxRadius, Math.hypot(dx, dy) / 10);
+            // using /10 to make it follow gently, or we can just clamp it.
+            // Let's standard clamp:
+            const moveX = Math.cos(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
+            const moveY = Math.sin(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
 
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        // Calculate angle and distance
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-        const angle = Math.atan2(dy, dx);
-
-        // Limit the movement radius
-        const maxRadius = 15;
-        const distance = Math.min(maxRadius, Math.hypot(dx, dy) / 10);
-        // using /10 to make it follow gently, or we can just clamp it.
-        // Let's standard clamp:
-        const moveX = Math.cos(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
-        const moveY = Math.sin(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
-
-        // Apply transform. Important: Keep the -50% -50% centering!
-        iris.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
-      });
-    });
-  </script>
+            // Apply transform. Important: Keep the -50% -50% centering!
+            iris.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
+          });
+        });
+      </script>
 </body>
 
 </html>
