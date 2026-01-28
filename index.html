@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PADHNE BATH JA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #161b2e;
+      --accent1: #ff4b5c;
+      --accent2: #ff7a8c;
+      --accent3: #ffb86c;
+      --accent4: #7b72ff;
+      --accent5: #33b5ff;
+      --accent6: #3ee6c2;
+      --text: #ffffff;
+      --muted: #a5b0d0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #222849 0, #060714 55%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      background: linear-gradient(135deg, #141728, #050612);
+      border-radius: 24px;
+      padding: 90px 20px 32px; /* extra top padding for big eyes */
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: -120px;
+      background: radial-gradient(circle at 10% 0, #ff7a8c55 0, transparent 50%),
+                  radial-gradient(circle at 90% 10%, #33b5ff44 0, transparent 55%);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .app-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ==== BIG REALISTIC ANIME EYES (PURE CSS) ==== */
+    .eyes {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      pointer-events: none;
+      display: flex;
+      gap: 40px;
+      animation: watch 6s infinite ease-in-out;
+    }
+
+    .eye {
+      width: 140px;
+      height: 90px;
+      position: relative;
+    }
+
+    .eye-sclera {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 60% 60% 80% 80%;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+      border: 3px solid #5b3a26;
+      animation: blink 4.5s infinite;
+      transform-origin: center center;
+    }
+
+    .eye-iris {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background:
+        radial-gradient(circle at 30% 30%, #ffffff 0, #f5e6d0 14%, transparent 16%),
+        radial-gradient(circle at 50% 80%, #f1b866 0, #c97832 40%, #4a220a 75%);
+      box-shadow:
+        0 0 0 4px rgba(54, 29, 15, 0.8),
+        0 0 20px rgba(0, 0, 0, 0.6);
+      animation: lookAround 7s infinite ease-in-out;
+    }
+
+    .eye-pupil {
+      width: 26px;
+      height: 36px;
+      border-radius: 52% 52% 50% 50%;
+      background: radial-gradient(circle at 30% 20%, #4d4d4d 0, #000000 60%);
+      position: absolute;
+      top: 46%;
+      left: 52%;
+      transform: translate(-50%, -50%);
+    }
+
+    .eye-shine-big {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      position: absolute;
+      top: 18%;
+      left: 30%;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+    }
+
+    .eye-shine-small {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      position: absolute;
+      top: 36%;
+      left: 22%;
+      opacity: 0.9;
+    }
+
+    .eye-lower-glow {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 28px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 0, rgba(255, 200, 130, 0.7), transparent 70%);
+      opacity: 0.9;
+    }
+
+    .eye-brow {
+      position: absolute;
+      top: -26px;
+      left: 10px;
+      right: 10px;
+      height: 16px;
+      border-radius: 50%;
+      border-top: 6px solid #5b3a26;
+    }
+
+    .eye-bottom-line {
+      position: absolute;
+      bottom: -6px;
+      left: 20px;
+      right: 20px;
+      height: 12px;
+      border-radius: 50%;
+      border-bottom: 4px solid #5b3a26;
+    }
+
+    .eye:nth-child(2) .eye-iris {
+      animation-delay: 0.2s;
+    }
+    .eye:nth-child(2) .eye-sclera {
+      animation-delay: 0.15s;
+    }
+
+    @keyframes blink {
+      0%, 9%, 100%   { transform: scaleY(1); }
+      4%, 5%         { transform: scaleY(0.08); }
+    }
+
+    @keyframes lookAround {
+      0%, 15%   { transform: translate(-50%, -50%); }
+      25%, 35%  { transform: translate(-60%, -52%); }
+      45%, 55%  { transform: translate(-40%, -52%); }
+      65%, 75%  { transform: translate(-52%, -45%); }
+      85%, 100% { transform: translate(-50%, -50%); }
+    }
+
+    @keyframes watch {
+      0%, 100% { transform: translateX(-50%); }
+      25%      { transform: translateX(-52%); }
+      50%      { transform: translateX(-48%); }
+      75%      { transform: translateX(-51%); }
+    }
+
+    /* ==== HEADER + CLOCK ==== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+      margin-top: 8px;
+    }
+
+    .title-block h1 {
+      font-size: 30px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .title-block p {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .clock {
+      text-align: right;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .clock-time {
+      font-size: 36px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    #clockDate {
+      font-size: 20px;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .top-buttons {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.04);
+      color: #ffffff;
+      font-size: 12px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.55);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent5), var(--accent6));
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--accent6), var(--accent5));
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff4b5c, #ff7a8c);
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #ff7a8c, #ff4b5c);
+    }
+
+    .dancers {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      justify-content: flex-end;
+    }
+
+    .dancer {
+      font-size: 40px;
+      animation: dance 0.9s infinite alternate ease-in-out;
+      transform-origin: 50% 80%;
+      filter: drop-shadow(0 0 6px rgba(255,255,255,0.3));
+    }
+
+    .dancer:nth-child(2) { animation-delay: 0.2s; }
+    .dancer:nth-child(3) { animation-delay: 0.35s; }
+    .dancer:nth-child(4) { animation-delay: 0.5s; }
+
+    @keyframes dance {
+      0%   { transform: translateY(0) rotate(-6deg); }
+      50%  { transform: translateY(-6px) rotate(4deg); }
+      100% { transform: translateY(0) rotate(-2deg); }
+    }
+
+    /* ==== TIMELINE ==== */
+    .timeline-wrapper {
+      margin-top: 16px;
+      padding: 18px 16px 14px;
+      background: rgba(11, 15, 35, 0.88);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      padding: 0 2px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .timeline-rows {
+      margin-top: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .timeline-row {
+      display: flex;
+      gap: 10px;
+      min-width: 1500px;
+      margin-bottom: 12px;
+    }
+
+    .timeline-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .row-title {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .hour-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 90px;
+      position: relative;
+    }
+
+    .task-box {
+      width: 100%;
+      min-height: 50px;
+      padding: 5px 7px;
+      border-radius: 10px;
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      font-size: 12px;
+      line-height: 1.3;
+      background: rgba(9, 13, 32, 0.9);
+      color: var(--text);
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s, transform 0.2s, background 0.2s;
+      overflow: hidden;
+    }
+
+    .task-box:empty::before {
+      content: "Your plan…";
+      color: rgba(165, 176, 208, 0.7);
+    }
+
+    .task-box:focus {
+      border-style: solid;
+      border-color: #ffd36b;
+      box-shadow: 0 0 0 1px rgba(255, 211, 107, 0.7);
+      transform: translateY(-1px);
+      background: #181d3a;
+    }
+
+    .time-box {
+      width: 100%;
+      padding: 10px 4px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      background-image: linear-gradient(
+        135deg,
+        var(--accent1),
+        var(--accent2),
+        var(--accent3),
+        var(--accent4),
+        var(--accent5),
+        var(--accent6)
+      );
+      background-size: 220% 220%;
+      animation: slideGradient 12s ease infinite;
+      box-shadow: 0 10px 18px rgba(0, 0, 0, 0.7);
+      transition: transform 0.2s, box-shadow 0.2s, filter 0.2s, opacity 0.2s;
+      color: #fff;
+    }
+
+    @keyframes slideGradient {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .time-box::after {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: radial-gradient(circle at 0 0, rgba(255,255,255,0.24), transparent 60%);
+      mix-blend-mode: screen;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    .hour-column:hover .time-box {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.8);
+    }
+
+    .past .time-box {
+      filter: grayscale(1) brightness(0.7);
+      opacity: 0.7;
+      box-shadow: none;
+    }
+
+    .past .task-box {
+      background: rgba(9, 12, 25, 0.96);
+      border-color: rgba(120, 132, 160, 0.6);
+      color: #999fb9;
+    }
+
+    .current .time-box {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 26px rgba(255, 224, 140, 0.7);
+    }
+
+    .current .task-box {
+      border-style: solid;
+      border-color: #ffe08c;
+      box-shadow: 0 0 0 1px rgba(255, 224, 140, 0.6);
+    }
+
+    /* ==== STOPWATCH ==== */
+    .stopwatch {
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(7, 11, 30, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stopwatch-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stopwatch-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .stopwatch-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .stopwatch-display {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      padding: 6px 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .stopwatch-controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ==== JOURNAL ==== */
+    .journal {
+      margin-top: 18px;
+      padding: 14px 16px 12px;
+      border-radius: 18px;
+      background: rgba(7, 11, 32, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .journal-header {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      margin-bottom: 8px;
+    }
+
+    .journal-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .journal-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .journal-entry {
+      margin-top: 10px;
+      border-radius: 14px;
+      background: rgba(5, 8, 25, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+
+    .journal-entry.today {
+      border-color: var(--accent5);
+      box-shadow: 0 0 0 1px rgba(51, 181, 255, 0.5);
+    }
+
+    .journal-entry-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      cursor: pointer;
+      background: rgba(13, 17, 40, 0.96);
+    }
+
+    .journal-entry-date {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .journal-entry-arrow {
+      font-size: 14px;
+      transition: transform 0.2s;
+    }
+
+    .journal-entry.collapsed .journal-entry-arrow {
+      transform: rotate(-90deg);
+    }
+
+    .journal-entry-body {
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .journal-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .journal-content {
+      min-height: 80px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 8px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      font-size: 13px;
+      line-height: 1.4;
+      outline: none;
+    }
+
+    /* Highlight: black text on yellow */
+    mark {
+      background: #ffe082;
+      color: #000000;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    /* ==== PROGRESS PAGE ==== */
+    .hidden {
+      display: none;
+    }
+
+    .page-title {
+      font-size: 24px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .progress-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      overflow: hidden;
+      border-radius: 14px;
+      background: rgba(9, 12, 29, 0.96);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.55);
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(21, 26, 60, 1);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(255,255,255,0.02);
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ==== CREDITS ==== */
+    .credits {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .credits-text {
+      font-size: 20px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .credits-name {
+      display: block;
+      font-size: 34px;
+      font-weight: 900;
+      margin-top: 4px;
+      background: linear-gradient(135deg, #ffb86c, #ffe082, #ff7a8c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 16px rgba(255, 200, 130, 0.4);
+    }
+
+    .credits-number {
+      margin-top: 4px;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      color: #ffe082;
+      text-shadow: 0 0 10px rgba(255, 200, 130, 0.4);
+    }
+
+    @media (max-width: 700px) {
+      .title-block h1 {
+        font-size: 22px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .clock {
+        text-align: left;
+      }
+      .stopwatch {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .journal-content {
+        max-height: 260px;
+      }
+      .eyes {
+        top: 4px;
+        gap: 24px;
+      }
+      .eye {
+        width: 110px;
+        height: 70px;
+      }
+      .credits-name {
+        font-size: 28px;
+      }
+      .credits-number {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-inner">
+
+      <!-- BIG CSS ANIME EYES -->
+      <div class="eyes" aria-hidden="true">
+        <div class="eye">
+          <div class="eye-sclera">
+            <div class="eye-brow"></div>
+            <div class="eye-iris">
+              <div class="eye-pupil"></div>
+              <div class="eye-shine-big"></div>
+              <div class="eye-shine-small"></div>
+              <div class="eye-lower-glow"></div>
+            </div>
+            <div class="eye-bottom-line"></div>
+          </div>
+        </div>
+        <div class="eye">
+          <div class="eye-sclera">
+            <div class="eye-brow"></div>
+            <div class="eye-iris">
+              <div class="eye-pupil"></div>
+              <div class="eye-shine-big"></div>
+              <div class="eye-shine-small"></div>
+              <div class="eye-lower-glow"></div>
+            </div>
+            <div class="eye-bottom-line"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN PAGE -->
+      <div id="mainPage">
+        <header>
+          <div class="title-block">
+            <h1>PADHNE BATH JA</h1>
+            <p>Plan your study day and keep an eye on every hour.</p>
+          </div>
+          <div class="clock">
+            <div class="clock-time" id="clockTime">--:-- --</div>
+            <div id="clockDate">Loading…</div>
+
+            <div class="top-buttons">
+              <button class="btn btn-primary" id="btnProgress">Progress</button>
+            </div>
+
+            <div class="dancers" aria-hidden="true">
+              <div class="dancer">🕺</div>
+              <div class="dancer">💃</div>
+              <div class="dancer">🦄</div>
+              <div class="dancer">🐱‍👓</div>
+            </div>
+          </div>
+        </header>
+
+        <section class="timeline-wrapper">
+          <div class="timeline-labels">
+            <span>Past hours will turn black &amp; white.</span>
+            <span>Current hour glows ✨ – future stays colourful.</span>
+          </div>
+
+          <div class="timeline-rows">
+            <div class="row-title">🌙 Night to Morning (12 AM – 11 AM)</div>
+            <div class="timeline-row" id="timelineRowAm"></div>
+
+            <div class="row-title" style="margin-top:8px;">🌞 Noon to Night (12 PM – 11 PM)</div>
+            <div class="timeline-row" id="timelineRowPm"></div>
+          </div>
+        </section>
+
+        <section class="stopwatch">
+          <div class="stopwatch-left">
+            <div class="stopwatch-title">Study Stopwatch</div>
+            <div class="stopwatch-sub">
+              Start when you begin studying. It counts total study time for <span id="todayLabel">today</span>.
+            </div>
+          </div>
+
+          <div class="stopwatch-display" id="stopwatchDisplay">
+            00:00:00
+          </div>
+
+          <div class="stopwatch-controls">
+            <button class="btn btn-primary" id="btnStartPause">Start</button>
+            <button class="btn btn-danger" id="btnReset">Reset</button>
+          </div>
+        </section>
+
+        <section class="journal" id="journalSection">
+          <div class="journal-header">
+            <div class="journal-title">Daily Thoughts</div>
+            <div class="journal-sub">
+              Write anything about your progress. Each day gets its own box, saved automatically.
+            </div>
+          </div>
+          <div id="journalEntries"></div>
+        </section>
+      </div>
+
+      <!-- PROGRESS PAGE -->
+      <div id="progressPage" class="hidden">
+        <header style="margin-bottom:18px;">
+          <div>
+            <div class="page-title">Progress</div>
+            <div class="progress-subtitle">
+              Date-wise total study time saved from your stopwatch.
+            </div>
+          </div>
+          <div>
+            <button class="btn" id="btnBack">&larr; Back to Timeline</button>
+          </div>
+        </header>
+
+        <section>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Total Study Time</th>
+              </tr>
+            </thead>
+            <tbody id="progressTableBody"></tbody>
+          </table>
+        </section>
+      </div>
+
+      <!-- CREDITS FOOTER -->
+      <div class="credits">
+        <div class="credits-text">
+          Created by
+          <span class="credits-name">Uday Sahu</span>
+          <div class="credits-number">91+ 8882413926</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "padhne_bath_ja_progress";
+    const TASKS_KEY = "padhne_bath_ja_tasks";
+    const JOURNAL_KEY = "padhne_bath_ja_journal";
+
+    function getTodayKey(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    // ---- TIMELINE ----
+    const rowAm = document.getElementById("timelineRowAm");
+    const rowPm = document.getElementById("timelineRowPm");
+
+    function formatHourLabel(h) {
+      const suffix = h >= 12 ? "PM" : "AM";
+      let hour = h % 12;
+      if (hour === 0) hour = 12;
+      return hour + " " + suffix;
+    }
+
+    function buildRow(start, endInclusive, container) {
+      for (let h = start; h <= endInclusive; h++) {
+        const col = document.createElement("div");
+        col.className = "hour-column";
+        col.dataset.hour = h;
+
+        const task = document.createElement("div");
+        task.className = "task-box";
+        task.contentEditable = "true";
+        task.setAttribute("spellcheck", "false");
+
+        const timeBox = document.createElement("div");
+        timeBox.className = "time-box";
+        timeBox.textContent = formatHourLabel(h);
+
+        col.appendChild(task);
+        col.appendChild(timeBox);
+        container.appendChild(col);
+      }
+    }
+
+    buildRow(0, 11, rowAm);
+    buildRow(12, 23, rowPm);
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(TASKS_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
+    }
+
+    function saveTasks() {
+      localStorage.setItem(TASKS_KEY, JSON.stringify(tasksData));
+    }
+
+    let tasksData = loadTasks();
+
+    function attachTaskBoxHandlers() {
+      const today = getTodayKey();
+      if (!tasksData[today]) tasksData[today] = {};
+      const todaysTasks = tasksData[today];
+
+      document.querySelectorAll(".task-box").forEach(box => {
+        const hour = box.parentElement.dataset.hour;
+        if (todaysTasks[hour]) {
+          box.innerText = todaysTasks[hour];
+        }
+
+        box.addEventListener("input", () => {
+          const dateKey = getTodayKey();
+          if (!tasksData[dateKey]) tasksData[dateKey] = {};
+          tasksData[dateKey][hour] = box.innerText;
+          saveTasks();
+        });
+      });
+    }
+
+    attachTaskBoxHandlers();
+
+    // ---- CLOCK ----
+    const clockTime = document.getElementById("clockTime");
+    const clockDate = document.getElementById("clockDate");
+
+    function updateClock() {
+      const now = new Date();
+
+      let hours = now.getHours();
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      const suffix = hours >= 12 ? "PM" : "AM";
+      let displayHour = hours % 12;
+      if (displayHour === 0) displayHour = 12;
+      clockTime.textContent = `${displayHour}:${minutes} ${suffix}`;
+
+      const options = {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      };
+      clockDate.textContent = now.toLocaleDateString(undefined, options);
+
+      const currentHour = hours;
+      document.querySelectorAll(".hour-column").forEach(col => {
+        const h = parseInt(col.dataset.hour, 10);
+        col.classList.remove("past", "current");
+        if (h < currentHour) {
+          col.classList.add("past");
+        } else if (h === currentHour) {
+          col.classList.add("current");
+        }
+      });
+    }
+
+    updateClock();
+    setInterval(updateClock, 60000);
+
+    // ---- STOPWATCH / PROGRESS ----
+    const stopwatchDisplay = document.getElementById("stopwatchDisplay");
+    const todayLabel = document.getElementById("todayLabel");
+    const btnStartPause = document.getElementById("btnStartPause");
+    const btnReset = document.getElementById("btnReset");
+    const progressTableBody = document.getElementById("progressTableBody");
+
+    todayLabel.textContent = getTodayKey();
+
+    function loadProgress() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
+    }
+
+    function saveProgress() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
+    }
+
+    let progressData = loadProgress();
+
+    function formatDuration(seconds) {
+      seconds = Math.max(0, Math.floor(seconds));
+      const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
+      const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+      const s = String(seconds % 60).padStart(2, "0");
+      return `${h}:${m}:${s}`;
+    }
+
+    function updateProgressTable() {
+      progressTableBody.innerHTML = "";
+      const entries = Object.entries(progressData);
+      entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
+      if (entries.length === 0) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 2;
+        cell.textContent = "No study time recorded yet. Go back and start the stopwatch!";
+        row.appendChild(cell);
+        progressTableBody.appendChild(row);
+        return;
+      }
+      for (const [date, seconds] of entries) {
+        const tr = document.createElement("tr");
+        const tdDate = document.createElement("td");
+        const tdTime = document.createElement("td");
+        tdDate.textContent = date;
+        tdTime.textContent = formatDuration(seconds);
+        tr.appendChild(tdDate);
+        tr.appendChild(tdTime);
+        progressTableBody.appendChild(tr);
+      }
+    }
+
+    let elapsedToday = progressData[getTodayKey()] || 0;
+    let stopwatchInterval = null;
+    let startedAtMs = null;
+    let baseAtStart = elapsedToday;
+
+    function renderStopwatch() {
+      stopwatchDisplay.textContent = formatDuration(elapsedToday);
+    }
+
+    renderStopwatch();
+    updateProgressTable();
+
+    function startStopwatch() {
+      if (stopwatchInterval) return;
+      baseAtStart = elapsedToday;
+      startedAtMs = Date.now();
+      stopwatchInterval = setInterval(() => {
+        const now = Date.now();
+        const deltaSeconds = Math.floor((now - startedAtMs) / 1000);
+        elapsedToday = baseAtStart + deltaSeconds;
+        stopwatchDisplay.textContent = formatDuration(elapsedToday);
+      }, 1000);
+      btnStartPause.textContent = "Pause";
+    }
+
+    function pauseStopwatch() {
+      if (!stopwatchInterval) return;
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = null;
+      progressData[getTodayKey()] = elapsedToday;
+      saveProgress();
+      updateProgressTable();
+      btnStartPause.textContent = "Start";
+    }
+
+    function resetStopwatch() {
+      elapsedToday = 0;
+      renderStopwatch();
+      if (stopwatchInterval) {
+        baseAtStart = 0;
+        startedAtMs = Date.now();
+      }
+      progressData[getTodayKey()] = 0;
+      saveProgress();
+      updateProgressTable();
+    }
+
+    btnStartPause.addEventListener("click", () => {
+      if (stopwatchInterval) {
+        pauseStopwatch();
+      } else {
+        startStopwatch();
+      }
+    });
+
+    btnReset.addEventListener("click", () => {
+      resetStopwatch();
+    });
+
+    // ---- JOURNAL ----
+    const journalEntriesContainer = document.getElementById("journalEntries");
+
+    function loadJournal() {
+      try {
+        const raw = localStorage.getItem(JOURNAL_KEY);
+        if (!raw) return {};
+        return JSON.parse(raw);
+      } catch {
+        return {};
+      }
+    }
+
+    function saveJournal() {
+      localStorage.setItem(JOURNAL_KEY, JSON.stringify(journalData));
+    }
+
+    let journalData = loadJournal();
+
+    function ensureTodayJournal() {
+      const today = getTodayKey();
+      if (!journalData[today]) journalData[today] = "";
+    }
+
+    function highlightSelectionWithin(container) {
+      const sel = window.getSelection();
+      if (!sel.rangeCount) return;
+      const range = sel.getRangeAt(0);
+      if (!container.contains(range.commonAncestorContainer)) return;
+      if (sel.isCollapsed) return;
+      const mark = document.createElement("mark");
+      try {
+        range.surroundContents(mark);
+      } catch {
+        const text = range.toString();
+        if (!text) return;
+        range.deleteContents();
+        mark.textContent = text;
+        range.insertNode(mark);
+      }
+      sel.removeAllRanges();
+    }
+
+    function buildJournalUI() {
+      journalEntriesContainer.innerHTML = "";
+      const todayKey = getTodayKey();
+      const entries = Object.entries(journalData);
+      entries.sort((a, b) => (a[0] < b[0] ? 1 : -1));
+
+      for (const [date, html] of entries) {
+        const entry = document.createElement("div");
+        entry.className = "journal-entry";
+        if (date === todayKey) entry.classList.add("today");
+
+        const header = document.createElement("div");
+        header.className = "journal-entry-header";
+
+        const dateSpan = document.createElement("div");
+        dateSpan.className = "journal-entry-date";
+        dateSpan.textContent = date;
+
+        const arrow = document.createElement("div");
+        arrow.className = "journal-entry-arrow";
+        arrow.textContent = "▼";
+
+        header.appendChild(dateSpan);
+        header.appendChild(arrow);
+        entry.appendChild(header);
+
+        const body = document.createElement("div");
+        body.className = "journal-entry-body";
+
+        const toolbar = document.createElement("div");
+        toolbar.className = "journal-toolbar";
+
+        const highlightBtn = document.createElement("button");
+        highlightBtn.className = "btn";
+        highlightBtn.textContent = "Highlight selection";
+
+        toolbar.appendChild(highlightBtn);
+
+        const content = document.createElement("div");
+        content.className = "journal-content";
+        content.contentEditable = "true";
+        content.innerHTML = html || "";
+
+        body.appendChild(toolbar);
+        body.appendChild(content);
+        entry.appendChild(body);
+
+        journalEntriesContainer.appendChild(entry);
+
+        if (date !== todayKey) {
+          entry.classList.add("collapsed");
+          body.style.display = "none";
+        }
+
+        header.addEventListener("click", () => {
+          const collapsed = entry.classList.toggle("collapsed");
+          body.style.display = collapsed ? "none" : "block";
+        });
+
+        content.addEventListener("input", () => {
+          journalData[date] = content.innerHTML;
+          saveJournal();
+        });
+
+        highlightBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          highlightSelectionWithin(content);
+          journalData[date] = content.innerHTML;
+          saveJournal();
+        });
+      }
+    }
+
+    ensureTodayJournal();
+    buildJournalUI();
+
+    // ---- PAGE SWITCH ----
+    const mainPage = document.getElementById("mainPage");
+    const progressPage = document.getElementById("progressPage");
+    const btnProgress = document.getElementById("btnProgress");
+    const btnBack = document.getElementById("btnBack");
+
+    btnProgress.addEventListener("click", () => {
+      pauseStopwatch();
+      mainPage.classList.add("hidden");
+      progressPage.classList.remove("hidden");
+      updateProgressTable();
+    });
+
+    btnBack.addEventListener("click", () => {
+      mainPage.classList.remove("hidden");
+      progressPage.classList.add("hidden");
+    });
+  </script>
+</body>
+</html>
