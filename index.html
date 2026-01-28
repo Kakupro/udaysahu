@@ -417,17 +417,16 @@
     }
 
     .timeline-rows::-webkit-scrollbar {
-      width: 0 !important;
-      height: 0 !important;
-      display: none !important;
-      background: transparent;
+      display: none;
     }
 
     .timeline-row {
       display: flex;
       gap: 12px;
-      min-width: 1600px;
-      /* Increased to fit wider columns */
+      width: max-content;
+      /* Takes exactly the space needed */
+      padding-right: 48px;
+      /* Extra padding at end so last item isn't cut off */
       margin-bottom: 14px;
     }
 
@@ -450,6 +449,8 @@
       width: 110px;
       /* Wider columns */
       position: relative;
+      flex-shrink: 0;
+      /* Prevent squishing */
     }
 
     .task-box {
