@@ -720,6 +720,100 @@
       margin-bottom: 18px;
     }
 
+    /* ==== WELCOME SCREEN ==== */
+    #welcomeScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: radial-gradient(circle at center, #1a1f35 0%, #050612 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      opacity: 1;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #welcomeScreen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .welcome-title {
+      font-size: 5vw;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: transparent;
+      background: linear-gradient(135deg, #ffffff 30%, #a5b0d0 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      position: relative;
+      z-index: 10;
+      text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      perspective: 500px;
+      transform-style: preserve-3d;
+      animation: titleFloat 6s ease-in-out infinite;
+    }
+
+    .welcome-subtitle {
+      font-size: 1.2vw;
+      color: var(--muted);
+      letter-spacing: 0.4em;
+      margin-top: 10px;
+      z-index: 10;
+      opacity: 0.8;
+    }
+
+    @keyframes titleFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) rotateX(0deg);
+      }
+
+      50% {
+        transform: translateY(-10px) rotateX(5deg);
+      }
+    }
+
+    .enter-btn {
+      margin-top: 60px;
+      padding: 12px 40px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 999px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .enter-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+      transform: scale(1.05);
+      letter-spacing: 0.25em;
+    }
+
+    /* BUBBLES */
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.01) 60%, transparent 80%);
+      box-shadow: inset -2px -2px 6px rgba(0, 0, 0, 0.1), inset 2px 2px 6px rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(2px);
+      pointer-events: none;
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      will-change: transform;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -829,6 +923,12 @@
 </head>
 
 <body>
+  <!-- WELCOME SCREEN -->
+  <div id="welcomeScreen">
+    <div class="welcome-title">UDAY STUDIO</div>
+    <div class="welcome-subtitle">PRESENTS</div>
+    <button class="enter-btn" id="enterBtn">ENTER EXPERIENCE</button>
+  </div>
   <div class="app">
     <div class="app-inner">
 
@@ -1334,35 +1434,61 @@
         });
 
         // ---- EYES FOLLOW CURSOR ----
+        // ---- EYES & BUBBLES FOLLOW CURSOR ----
         document.addEventListener("mousemove", (e) => {
+          // Eyes logic
           const irises = document.querySelectorAll(".eye-iris");
-
           irises.forEach((iris) => {
-            // Get the center of the eye relative to the viewport
             const rect = iris.parentElement.getBoundingClientRect();
-            // iris.parentElement is .eye-sclera, so let's use the .eye wrapper for better center calculation or just the sclera
-            // Actually, let's use the iris's initial position reference which is centered in .eye-sclera
-
             const centerX = rect.left + rect.width / 2;
             const centerY = rect.top + rect.height / 2;
-
-            // Calculate angle and distance
             const dx = e.clientX - centerX;
             const dy = e.clientY - centerY;
             const angle = Math.atan2(dy, dx);
-
-            // Limit the movement radius
             const maxRadius = 15;
-            const distance = Math.min(maxRadius, Math.hypot(dx, dy) / 10);
-            // using /10 to make it follow gently, or we can just clamp it.
-            // Let's standard clamp:
             const moveX = Math.cos(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
             const moveY = Math.sin(angle) * Math.min(maxRadius, Math.hypot(dx, dy));
-
-            // Apply transform. Important: Keep the -50% -50% centering!
             iris.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
           });
+
+          // Bubbles logic
+          const bubbles = document.querySelectorAll(".bubble");
+          if (bubbles.length > 0) {
+            bubbles.forEach(b => {
+              const speed = parseFloat(b.getAttribute('data-speed'));
+              const x = (window.innerWidth - e.clientX * speed) / 100;
+              const y = (window.innerHeight - e.clientY * speed) / 100;
+              b.style.transform = `translate(${x}px, ${y}px)`;
+            });
+          }
         });
+
+        // ---- WELCOME SCREEN LOGIC ----
+        const welcomeScreen = document.getElementById("welcomeScreen");
+        const enterBtn = document.getElementById("enterBtn");
+
+        if (welcomeScreen && enterBtn) {
+          // Create random bubbles
+          for (let i = 0; i < 20; i++) {
+            const b = document.createElement("div");
+            b.className = "bubble";
+            const size = Math.random() * 80 + 20;
+            b.style.width = size + "px";
+            b.style.height = size + "px";
+            b.style.left = Math.random() * 100 + "vw";
+            b.style.top = Math.random() * 100 + "vh";
+            b.setAttribute('data-speed', (Math.random() * 5 + 2).toString());
+            welcomeScreen.appendChild(b);
+          }
+
+          enterBtn.addEventListener("click", () => {
+            welcomeScreen.classList.add("fade-out");
+            setTimeout(() => {
+              welcomeScreen.style.display = "none";
+            }, 800);
+          });
+        }
+
       </script>
 </body>
 
